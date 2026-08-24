@@ -1,0 +1,45 @@
+# Sobe a API + um banco PostgreSQL isolado em containers.
+# Uso: docker compose up --build
+services:
+  postgres:
+    image: postgres:17
+    container_name: agendamento-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: agendamento_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    container_name: agendamento-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: agendamento_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-DBv9M6NUk0N4r8aEoGeXV5Xckux2z70VRlg5Y7QqvoQ=}
+      NOTIFICATION_PROVIDER: ${NOTIFICATION_PROVIDER:-console}
+      SES_FROM_EMAIL: ${SES_FROM_EMAIL:-no-reply@example.com}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+    ports:
+      - "8081:8081"
+
+volumes:
+  postgres_data:

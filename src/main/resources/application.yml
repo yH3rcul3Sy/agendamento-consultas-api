@@ -1,0 +1,45 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+spring:
+  application:
+    name: agendamento-consultas-api
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:agendamento_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      # 'update': cria/ajusta as tabelas automaticamente a partir das entidades.
+      # Em producao, prefira uma ferramenta de migration (Flyway/Liquibase).
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:DBv9M6NUk0N4r8aEoGeXV5Xckux2z70VRlg5Y7QqvoQ=}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000} # 24 horas
+
+  aws:
+    region: ${AWS_REGION:us-east-1}
+
+  notification:
+    # 'console': apenas registra o e-mail no log (padrao, uso local sem AWS).
+    # 'ses': envia de verdade via AWS SES (requer credenciais AWS configuradas).
+    provider: ${NOTIFICATION_PROVIDER:console}
+    ses:
+      from-email: ${SES_FROM_EMAIL:no-reply@example.com}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
