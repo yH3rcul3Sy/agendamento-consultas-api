@@ -28,18 +28,22 @@ public class AppointmentService {
     private final ProfessionalRepository professionalRepository;
     private final AppointmentNotificationService notificationService;
 
+    @Transactional(readOnly = true)
     public List<AppointmentResponse> findAll() {
         return appointmentRepository.findAll().stream().map(AppointmentResponse::from).toList();
     }
 
+    @Transactional(readOnly = true)
     public AppointmentResponse findById(Long id) {
         return AppointmentResponse.from(getAppointmentOrThrow(id));
     }
 
+    @Transactional(readOnly = true)
     public List<AppointmentResponse> findByPatient(Long patientId) {
         return appointmentRepository.findByPatientId(patientId).stream().map(AppointmentResponse::from).toList();
     }
 
+    @Transactional(readOnly = true)
     public List<AppointmentResponse> findByProfessional(Long professionalId) {
         return appointmentRepository.findByProfessionalId(professionalId).stream().map(AppointmentResponse::from).toList();
     }
